@@ -1,0 +1,1 @@
+# SuMa.Ksp.BatteryCalculator
