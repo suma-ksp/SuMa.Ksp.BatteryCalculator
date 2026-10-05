@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- KSP 1 requires legacy .NET Framework execution -->
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <OutputType>Library</OutputType>
+    <KspDir>..\..\..\_KspDev</KspDir>
+    <!-- The game already ships every referenced assembly, so the output must contain only our own files -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <!--
+      Build straight into the mod folder, so the assembly and its GameData content land where KSP
+      expects them and the folder can be copied into the game as is.
+      Redirecting OutDir does this without a copy or move step: a move target would delete
+      $(TargetPath) and force a full rebuild on every build.
+    -->
+    <OutDir>..\..\..\_GameData\zzz_suma\SuMa.Ksp.BatteryCalculator\</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PolySharp" Version="1.15.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <!-- Only for the compiler: ApplicationLauncher.AddModApplication has an overload taking an Animator. -->
+    <Reference Include="UnityEngine.AnimationModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <!-- Input, which the window reads the mouse from while its resize grip is held. -->
+    <Reference Include="UnityEngine.InputLegacyModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <!--
+      The one mod this assembly references directly: ClickThroughBlocker keeps a click on the window from
+      also landing on the craft behind it. Every other mod is looked up by name at runtime, so a plain
+      stock install plus ClickThroughBlocker is enough to run.
+    -->
+    <Reference Include="ClickThroughBlocker" Private="false">
+      <HintPath>$(KspDir)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      OutDir is already the mod folder, so the content is linked in without its
+      GameData\zzz_suma\SuMa.Ksp.BatteryCalculator prefix or it would be nested twice.
+    -->
+    <None Remove="GameData\**\*" />
+    <None Include="GameData\zzz_suma\SuMa.Ksp.BatteryCalculator\**\*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

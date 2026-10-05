@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- KSP 1 requires legacy .NET Framework execution -->
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <OutputType>Library</OutputType>
+    <KspDir>..\..\..\_KspDev</KspDir>
+    <!-- The game already ships every referenced assembly, so the output must contain only our own files -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <!--
+      Built into the same mod folder as SuMa.Ksp.BatteryCalculator, so the assemblies ship together. This one
+      is separate only so that its KSPAssemblyDependency on ToolbarControl can stop KSP loading it when that
+      mod is absent, leaving the calculator on the stock application launcher.
+    -->
+    <OutDir>..\..\..\_GameData\zzz_suma\SuMa.Ksp.BatteryCalculator\</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PolySharp" Version="1.15.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Private, because both projects build into the same folder and the main project owns that copy. -->
+    <ProjectReference Include="..\SuMa.Ksp.BatteryCalculator\SuMa.Ksp.BatteryCalculator.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" Private="false">
+      <HintPath>$(KspDir)\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <!-- linuxgurugamer's toolbar abstraction, shipped as its own mod folder inside GameData -->
+    <Reference Include="ToolbarControl" Private="false">
+      <HintPath>$(KspDir)\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
